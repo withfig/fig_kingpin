@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/alecthomas/kingpin/v2"3
+	"github.com/alecthomas/kingpin/v2"
 
 	// 1. Add the figkingpin package
 	figkingpin "github.com/withfig/fig_kingpin"
@@ -13,7 +13,7 @@ var (
 	app = kingpin.New("Bucket Uploader", "A command-line app to upload files to a cloud storage bucket.")
 
 	// 2. Add a top level flag to gen fig spec, it is hidden from the help output
-	genFig = app.Flag("completion-script-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionScript(app)).Bool()
+	completionSpecFig = app.Flag("completion-spec-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionSpec(app)).Bool()
 
 	// Other commands
 	uploadCmd  = app.Command("upload", "Upload a file to a specified bucket.")

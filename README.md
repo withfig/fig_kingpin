@@ -4,7 +4,7 @@ Support for generating Fig Spec from [Kingpin CLI apps](https://github.com/alect
 
 ## Usage
 
-### 1. Add the `figkingpin` package and `--completion-script-fig` to your app
+### 1. Add the `figkingpin` package and `--completion-spec-fig` to your app
 
 ```go
 import (
@@ -18,12 +18,12 @@ var (
 	app = kingpin.New("App", "A demo app")
 
 	// 2. Add a top level flag to gen fig spec, it is hidden from the help output
-	genFig = app.Flag("completion-script-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionScript(app)).Bool()
+	completionSpecFig = app.Flag("completion-spec-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionSpec(app)).Bool()
 )
 ```
 
-### 2. Generate a Fig Spec via `--completion-script-fig`
+### 2. Generate a Fig Spec via `--completion-spec-fig`
 
 ```bash
-go run main.go --completion-script-fig > fig-spec.ts
+go run main.go --completion-spec-fig > fig-spec.ts
 ```

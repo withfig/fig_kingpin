@@ -119,7 +119,7 @@ func figSubcommandsJson(models []*kingpin.CmdModel) []any {
 	return subcommands
 }
 
-func GenerateFigCompletionScript(a *kingpin.Application) func(c *kingpin.ParseContext) error {
+func GenerateFigCompletionSpec(a *kingpin.Application) func(c *kingpin.ParseContext) error {
 	return func(c *kingpin.ParseContext) error {
 		var marsheledJson, err = json.MarshalIndent(figSpecJson(a.Model()), "", "  ")
 		if err != nil {
