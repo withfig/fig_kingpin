@@ -1,0 +1,36 @@
+package main
+
+import (
+	"os"
+
+	"github.com/alecthomas/kingpin/v2"3
+
+	// 1. Add the figkingpin package
+	figkingpin "github.com/withfig/fig_kingpin"
+)
+
+var (
+	app = kingpin.New("Bucket Uploader", "A command-line app to upload files to a cloud storage bucket.")
+
+	// 2. Add a top level flag to gen fig spec, it is hidden from the help output
+	genFig = app.Flag("completion-script-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionScript(app)).Bool()
+
+	// Other commands
+	uploadCmd  = app.Command("upload", "Upload a file to a specified bucket.")
+	filePath   = uploadCmd.Arg("file", "Path of the file to upload.").Required().String()
+	bucketName = uploadCmd.Arg("bucket", "Name of the bucket where the file will be uploaded.").Required().String()
+
+	nestedLevel1Cmd  = app.Command("nested", "A nested command.")
+	nestedLevel2Cmd  = nestedLevel1Cmd.Command("level2", "A nested command.")
+	nestedLevel2Flag = nestedLevel2Cmd.Flag("nested-flag", "A nested flag.").String()
+	nestedLevel3Cmd  = nestedLevel2Cmd.Command("level3", "A nested command.")
+)
+
+func main() {
+	var command = kingpin.MustParse(app.Parse(os.Args[1:]))
+
+	switch command {
+	case uploadCmd.FullCommand():
+		//
+	}
+}
