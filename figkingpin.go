@@ -2,18 +2,19 @@ package figkingpin
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
-	"github.com/alecthomas/kingpin/v2"
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 func figFlagJson(model *kingpin.FlagModel) any {
 	var flag = map[string]interface{}{}
 
 	if model.Short != 0 {
-		flag["name"] = []string{model.Name, string(model.Short)}
+		flag["name"] = []string{fmt.Sprintf("--%s", model.Name), fmt.Sprintf("-%c", model.Short)}
 	} else {
-		flag["name"] = model.Name
+		flag["name"] = fmt.Sprintf("--%s", model.Name)
 	}
 
 	if model.Help != "" {
@@ -32,6 +33,8 @@ func figFlagJson(model *kingpin.FlagModel) any {
 		flag["args"] = map[string]interface{}{
 			"name": "ARG",
 		}
+
+		flag["requiresEquals"] = true
 	}
 
 	return flag

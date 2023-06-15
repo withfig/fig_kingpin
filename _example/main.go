@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/alecthomas/kingpin/v2"
+	"gopkg.in/alecthomas/kingpin.v2"
 
 	// 1. Add the figkingpin package
 	figkingpin "github.com/withfig/fig_kingpin"
