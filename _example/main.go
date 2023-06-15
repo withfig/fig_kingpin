@@ -13,12 +13,12 @@ var (
 	app = kingpin.New("Bucket Uploader", "A command-line app to upload files to a cloud storage bucket.")
 
 	// 2. Add a top level flag to gen fig spec, it is hidden from the help output
-	completionSpecFig = app.Flag("completion-spec-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionSpec(app)).Bool()
+	completionSpecFig = app.Flag("completion-spec-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionSpec(app)).String()
 
 	// Other commands
 	uploadCmd  = app.Command("upload", "Upload a file to a specified bucket.")
 	filePath   = uploadCmd.Arg("file", "Path of the file to upload.").Required().String()
-	bucketName = uploadCmd.Arg("bucket", "Name of the bucket where the file will be uploaded.").Required().String()
+	bucketName = uploadCmd.Flag("bucket", "Name of the bucket where the file will be uploaded.").Required().Enum("bucket1", "bucket2")
 
 	nestedLevel1Cmd  = app.Command("nested", "A nested command.")
 	nestedLevel2Cmd  = nestedLevel1Cmd.Command("level2", "A nested command.")

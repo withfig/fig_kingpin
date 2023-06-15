@@ -18,12 +18,11 @@ var (
 	app = kingpin.New("App", "A demo app")
 
 	// 2. Add a top level flag to gen fig spec, it is hidden from the help output
-	completionSpecFig = app.Flag("completion-spec-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionSpec(app)).Bool()
-)
+	completionSpecFig = app.Flag("completion-spec-fig", "Generate completion script for fig.").Hidden().PreAction(figkingpin.GenerateFigCompletionSpec(app)).String())
 ```
 
 ### 2. Generate a Fig Spec via `--completion-spec-fig`
 
 ```bash
-go run main.go --completion-spec-fig > fig-spec.ts
+go run main.go --completion-spec-fig spec-name > spec-name.ts
 ```
