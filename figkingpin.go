@@ -8,7 +8,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
-func figFlagJson(model *kingpin.FlagModel) any {
+func figFlagJson(model *kingpin.FlagModel, specName string, fullCmd string) any {
 	var flag = map[string]interface{}{}
 
 	if model.Short != 0 {
@@ -31,20 +31,21 @@ func figFlagJson(model *kingpin.FlagModel) any {
 
 	if !model.IsBoolFlag() {
 		flag["args"] = map[string]interface{}{
-			"name": "ARG",
+			"name": model.FormatPlaceHolder(),
+			"generator": map[string]interface{}{
+				"script": fmt.Sprintf("%s --completion-bash %s --%s", specName, fullCmd, model.Name),
+			},
 		}
-
-		flag["requiresEquals"] = true
 	}
 
 	return flag
 
 }
 
-func figFlagsJson(models []*kingpin.FlagModel) []any {
+func figFlagsJson(models []*kingpin.FlagModel, specName string, fullCmd string) []any {
 	var flags []any
 	for _, model := range models {
-		flags = append(flags, figFlagJson(model))
+		flags = append(flags, figFlagJson(model, specName, fullCmd))
 	}
 	return flags
 }
@@ -77,16 +78,16 @@ func figArgsJson(models []*kingpin.ArgModel) any {
 	}
 }
 
-func figSpecJson(model *kingpin.ApplicationModel) any {
+func figSpecJson(model *kingpin.ApplicationModel, name string) any {
 	return map[string]interface{}{
-		"name":        model.Name,
+		"name":        name,
 		"description": model.Help,
-		"subcommands": figSubcommandsJson(model.Commands),
-		"options":     figFlagsJson(model.Flags),
+		"subcommands": figSubcommandsJson(model.Commands, name),
+		"options":     figFlagsJson(model.Flags, name, ""),
 	}
 }
 
-func figSubcommandJson(model *kingpin.CmdModel) any {
+func figSubcommandJson(model *kingpin.CmdModel, specName string) any {
 	var subcommand = map[string]interface{}{
 		"name": model.Name,
 	}
@@ -100,11 +101,11 @@ func figSubcommandJson(model *kingpin.CmdModel) any {
 	}
 
 	if len(model.Commands) > 0 {
-		subcommand["subcommands"] = figSubcommandsJson(model.Commands)
+		subcommand["subcommands"] = figSubcommandsJson(model.Commands, specName)
 	}
 
 	if len(model.Flags) > 0 {
-		subcommand["options"] = figFlagsJson(model.Flags)
+		subcommand["options"] = figFlagsJson(model.Flags, specName, model.FullCommand)
 	}
 
 	if len(model.Args) > 0 {
@@ -114,17 +115,19 @@ func figSubcommandJson(model *kingpin.CmdModel) any {
 	return subcommand
 }
 
-func figSubcommandsJson(models []*kingpin.CmdModel) []any {
+func figSubcommandsJson(models []*kingpin.CmdModel, specName string) []any {
 	var subcommands []any
 	for _, model := range models {
-		subcommands = append(subcommands, figSubcommandJson(model))
+		subcommands = append(subcommands, figSubcommandJson(model, specName))
 	}
 	return subcommands
 }
 
 func GenerateFigCompletionSpec(a *kingpin.Application) func(c *kingpin.ParseContext) error {
 	return func(c *kingpin.ParseContext) error {
-		var marsheledJson, err = json.MarshalIndent(figSpecJson(a.Model()), "", "  ")
+		var name = c.Elements[len(c.Elements)-1].Value
+
+		var marsheledJson, err = json.MarshalIndent(figSpecJson(a.Model(), *name), "", "  ")
 		if err != nil {
 			return err
 		}
