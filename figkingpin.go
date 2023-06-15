@@ -33,7 +33,8 @@ func figFlagJson(model *kingpin.FlagModel, specName string, fullCmd string) any 
 		flag["args"] = map[string]interface{}{
 			"name": model.FormatPlaceHolder(),
 			"generator": map[string]interface{}{
-				"script": fmt.Sprintf("%s --completion-bash %s --%s", specName, fullCmd, model.Name),
+				"script":  fmt.Sprintf("%s --completion-bash %s --%s", specName, fullCmd, model.Name),
+				"splitOn": "\n",
 			},
 		}
 	}
@@ -50,7 +51,7 @@ func figFlagsJson(models []*kingpin.FlagModel, specName string, fullCmd string) 
 	return flags
 }
 
-func figArgJson(model *kingpin.ArgModel) any {
+func figArgJson(model *kingpin.ArgModel, specName string, fullCmd string) any {
 	var arg = map[string]interface{}{
 		"name": model.Name,
 	}
@@ -63,16 +64,21 @@ func figArgJson(model *kingpin.ArgModel) any {
 		arg["isRequired"] = model.Required
 	}
 
+	arg["generator"] = map[string]interface{}{
+		"script":  fmt.Sprintf("%s --completion-bash %s --%s", specName, fullCmd, model.Name),
+		"splitOn": "\n",
+	}
+
 	return arg
 }
 
-func figArgsJson(models []*kingpin.ArgModel) any {
+func figArgsJson(models []*kingpin.ArgModel, specName string, fullCmd string) any {
 	if len(models) == 1 {
-		return figArgJson(models[0])
+		return figArgJson(models[0], specName, fullCmd)
 	} else {
 		var args []any
 		for _, model := range models {
-			args = append(args, figArgJson(model))
+			args = append(args, figArgJson(model, specName, fullCmd))
 		}
 		return args
 	}
@@ -109,7 +115,7 @@ func figSubcommandJson(model *kingpin.CmdModel, specName string) any {
 	}
 
 	if len(model.Args) > 0 {
-		subcommand["args"] = figArgsJson(model.Args)
+		subcommand["args"] = figArgsJson(model.Args, specName, model.FullCommand)
 	}
 
 	return subcommand
